@@ -1,71 +1,85 @@
 const vscode = require('vscode')
-const QUOTE = '"'
-const SEPARATOR = ','
-const BRACKET_START = '['
-const BRACKET_END = ']'
-const PATTERN_SEARCH_LINE_COUNT = 2
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	console.log('Congratulations, your extension "arrayer" is now active!')
-
 	let disposable = vscode.commands.registerCommand('arrayer.convert', function () {
 		let editor = vscode.window.activeTextEditor
-		let text = vscode.window.activeTextEditor.document.getText(editor.selection)
+		let conf = vscode.workspace.getConfiguration()
 
-		// Split data into lines by newline
-		let lines = text.toString().split('\n')
-		// Remove spaces
-		lines = lines.map(l => l.trim())
-		console.table(lines)
-		// Look for patterns
-		let patternLines = lines.slice(0,Math.min(lines.length, PATTERN_SEARCH_LINE_COUNT))
-	    // Find extra separator characters
-		let startSeparatorCount = 0
-		let endSeparatorCount = 0
-		for (let p of patternLines) {
-			if (isSeparator(p.substring(0, 1)))
-			{
-				startSeparatorCount++
+		const PATTERN_SEARCH_LINE_COUNT = conf.get("arrayer.patternSearchLines")
+		const QUOTE = conf.get("arrayer.quoteStyle")
+		const SEPARATOR = conf.get("arrayer.separatorStyle")
+		const BRACKET_START = ""
+		const BRACKET_END = ""
+		if (conf.get("arrayer.bracketStyle") != "none") {
+			const BRACKET_START = conf.get("arrayer.bracketStyle").substring(0,1)
+			const BRACKET_END = conf.get("arrayer.bracketStyle").substring(1,2)
+		}
+
+		let text = vscode.window.activeTextEditor.document.getText(editor.selection)
+		if (text)
+		{
+			// Split data into lines by newline
+			let lines = text.toString().split('\n')
+			// Remove spaces
+			lines = lines.map(l => l.trim())
+			console.table(lines)
+			let isNumbers = null
+			// Look for patterns
+			if (PATTERN_SEARCH_LINE_COUNT > 0) {
+				let patternLines = lines.slice(0, Math.min(lines.length, PATTERN_SEARCH_LINE_COUNT))
+			
+				// Find extra separator characters
+				let startSeparatorCount = 0
+				let endSeparatorCount = 0
+				for (let p of patternLines) {
+					if (isSeparator(p.substring(0, 1)))
+					{
+						startSeparatorCount++
+					}
+					if (isSeparator(p.substring(p.length - 1, p.length)))
+					{
+						endSeparatorCount++
+					}
+				}
+				// Remove extra separator characters
+				if (startSeparatorCount == patternLines.length) {
+					lines = lines.map(l => removeStartSeparator(l))
+				}
+				if (endSeparatorCount == patternLines.length) {
+					lines = lines.map(l => removeEndSeparator(l))
+				}
+
+				// Detect if lines are numbers, to allow unquoted list
+				patternLines = lines.slice(0, Math.min(lines.length, PATTERN_SEARCH_LINE_COUNT))
+				isNumbers = true				
+				for (let p of patternLines) {
+					if (!isNumber(p))
+					{
+						isNumbers = false
+						break
+					}
+				}
 			}
-			if (isSeparator(p.substring(p.length - 1, p.length)))
-			{
-				endSeparatorCount++
+			
+			// Generate output array
+			outputString = BRACKET_START
+			if (isNumbers) {
+				lines.forEach(l => outputString += `${l}${SEPARATOR}`)
 			}
-		}
-		// Remove extra separator characters
-		if (startSeparatorCount == patternLines.length) {
-			lines = lines.map(l => removeStartSeparator(l))
-		}
-		if (endSeparatorCount == patternLines.length) {
-			lines = lines.map(l => removeEndSeparator(l))
-		}
-		// Detect if lines are numbers, to allow unquoted list
-		patternLines = lines.slice(0,Math.min(lines.length, PATTERN_SEARCH_LINE_COUNT))
-		let isNumbers = true
-		for (let p of patternLines) {
-			if (!isNumber(p))
-			{
-				isNumbers = false
-				break
+			else {
+				lines.forEach(l => outputString += `${QUOTE}${l}${QUOTE}${SEPARATOR}`)
 			}
+			outputString = outputString.substring(0, outputString.length - 1)
+			outputString += BRACKET_END
+
+			// Replace text in editor
+			editor.edit((editBuilder) => {
+				editBuilder.replace(editor.selection, outputString)
+			}) 
 		}
-		// Generate output array
-		outputString = BRACKET_START
-		if (isNumbers) {
-			lines.forEach(l => outputString += `${l}${SEPARATOR}`)
-		}
-		else {
-			lines.forEach(l => outputString += `${QUOTE}${l}${QUOTE}${SEPARATOR}`)
-		}
-		outputString = outputString.substring(0, outputString.length - 1)
-		outputString += BRACKET_END
-		editor.edit((editBuilder) => {
-			editBuilder.replace(editor.selection, outputString)
-		})  
-		vscode.window.showInformationMessage(`${outputString}`)
 	});
 
 	context.subscriptions.push(disposable)

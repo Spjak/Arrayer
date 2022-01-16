@@ -18,7 +18,35 @@
             "command": "arrayer.convert",
             "title": "Convert to array"
 
-		}]
+		}],
+		"configuration": {
+			"title": "Arrayer",
+			"properties": {
+				"arrayer.quoteStyle": {
+					"type": "string",
+					"enum": ["'","\""],
+					"default": "\"",
+					"description": "Use double or single quotes for array items"
+				},
+				"arrayer.separatorStyle": {
+					"type": "string",
+					"enum": [",",";"],
+					"default": ",",
+					"description": "Array item separator character"
+				},
+				"arrayer.bracketStyle": {
+					"type": "string",
+					"enum": ["[]","{}","()","none"],
+					"default": "[]",
+					"description": "Array bracket style"
+				},
+				"arrayer.patternSearchLines": {
+					"type": "integer",
+					"default": 5,
+					"description": "Maximum number of lines used to identify patterns in the selections. Set to 0 to disable pattern search"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"lint": "eslint .",
