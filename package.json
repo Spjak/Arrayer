@@ -2,7 +2,7 @@
   "name": "arrayer",
 	"displayName": "Arrayer",
 	"description": "Convert lines of text or numbers into an array",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "SpjakSoftware",
 	"repository": {
 		"type": "git",
@@ -28,7 +28,7 @@
 	"contributes": {
 		"commands": [{
             "command": "arrayer.convert",
-            "title": "Convert selection to array"
+            "title": "Arrayer: Convert selection to array"
 
 		}],
 		"configuration": {
@@ -55,7 +55,7 @@
 				"arrayer.patternSearchLines": {
 					"type": "integer",
 					"default": 5,
-					"description": "Maximum number of lines used to identify patterns in the selections. Set to 0 to disable pattern search"
+					"description": "Maximum number of lines used to identify patterns in the selection. Set to 0 to disable pattern search"
 				}
 			}
 		}

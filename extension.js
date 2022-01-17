@@ -58,8 +58,8 @@ function activate(context) {
 						break
 					}
 				}
-				hasQuotes = true
 				// Detect if lines have quotes already
+				hasQuotes = true
 				for (let p of patternLines) {
 					if (!hasQuote(p))
 					{
