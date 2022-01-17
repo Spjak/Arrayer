@@ -1,13 +1,25 @@
 {
   "name": "arrayer",
 	"displayName": "Arrayer",
-	"description": "",
+	"description": "Convert lines of text or numbers into an array",
 	"version": "0.0.1",
+	"publisher": "SpjakSoftware",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Spjak/Arrayer"
+	},
 	"engines": {
 		"vscode": "^1.63.0"
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"array",
+		"list",
+		"convert",
+		"converter",
+		"csv"
 	],
 	"activationEvents": [
         "onCommand:arrayer.convert"
@@ -16,7 +28,7 @@
 	"contributes": {
 		"commands": [{
             "command": "arrayer.convert",
-            "title": "Convert to array"
+            "title": "Convert selection to array"
 
 		}],
 		"configuration": {
@@ -26,7 +38,7 @@
 					"type": "string",
 					"enum": ["'","\""],
 					"default": "\"",
-					"description": "Use double or single quotes for array items"
+					"description": "Quotation mark for array items"
 				},
 				"arrayer.separatorStyle": {
 					"type": "string",
