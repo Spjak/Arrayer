@@ -11,12 +11,8 @@ function activate(context) {
 		const PATTERN_SEARCH_LINE_COUNT = conf.get("arrayer.patternSearchLines")
 		const QUOTE = conf.get("arrayer.quoteStyle")
 		const SEPARATOR = conf.get("arrayer.separatorStyle")
-		const BRACKET_START = ""
-		const BRACKET_END = ""
-		if (conf.get("arrayer.bracketStyle") != "none") {
-			const BRACKET_START = conf.get("arrayer.bracketStyle").substring(0,1)
-			const BRACKET_END = conf.get("arrayer.bracketStyle").substring(1,2)
-		}
+		const BRACKET_START = conf.get("arrayer.bracketStyle") == "none" ? "" : conf.get("arrayer.bracketStyle").substring(0,1)
+		const BRACKET_END = conf.get("arrayer.bracketStyle") == "none" ? "" : conf.get("arrayer.bracketStyle").substring(1,2)
 
 		let text = vscode.window.activeTextEditor.document.getText(editor.selection)
 		if (text)
@@ -25,8 +21,8 @@ function activate(context) {
 			let lines = text.toString().split('\n')
 			// Remove spaces
 			lines = lines.map(l => l.trim())
-			console.table(lines)
 			let isNumbers = null
+			
 			// Look for patterns
 			if (PATTERN_SEARCH_LINE_COUNT > 0) {
 				let patternLines = lines.slice(0, Math.min(lines.length, PATTERN_SEARCH_LINE_COUNT))
@@ -62,11 +58,20 @@ function activate(context) {
 						break
 					}
 				}
+				hasQuotes = true
+				// Detect if lines have quotes already
+				for (let p of patternLines) {
+					if (!hasQuote(p))
+					{
+						hasQuotes = false
+						break
+					}
+				}
 			}
 			
 			// Generate output array
 			outputString = BRACKET_START
-			if (isNumbers) {
+			if (isNumbers || hasQuotes) {
 				lines.forEach(l => outputString += `${l}${SEPARATOR}`)
 			}
 			else {
@@ -107,6 +112,11 @@ function removeEndSeparator(s) {
 function isNumber(s) {
     let numberRegex = /^(-?)([0-9]+)[\.]?([0-9]+)$/
     return s.match(numberRegex)
+}
+
+function hasQuote(s) {
+    let quoteRegex = /^["'].*["']$/
+    return s.match(quoteRegex)
 }
 
 module.exports = {
