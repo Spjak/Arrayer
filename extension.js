@@ -93,18 +93,18 @@ function activate(context) {
 function deactivate() {}
 
 function isSeparator(s) {
-    let separatorRegex = /[,;]/
+    let separatorRegex = /[,;:]/
     return s.match(separatorRegex)
 }
 
 function removeStartSeparator(s) {
-	let separatorRegex = /^([,;])(.*)/
+	let separatorRegex = /^([,;:])(.*)/
 	let res = s.match(separatorRegex)
 	return res ? res[2] : s
 }
 
 function removeEndSeparator(s) {
-	let separatorRegex = /(.*)([,;])$/
+	let separatorRegex = /(.*)([,;:])$/
 	let res = s.match(separatorRegex)
 	return res ? res[1] : s
 }
