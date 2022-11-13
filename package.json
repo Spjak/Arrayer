@@ -2,8 +2,9 @@
   "name": "arrayer",
 	"displayName": "Arrayer",
 	"description": "Convert lines of text or numbers into an array",
-	"version": "0.0.2",
+	"version": "1.0.0",
 	"publisher": "SpjakSoftware",
+	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Spjak/Arrayer"
